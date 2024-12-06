@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from datetime import datetime
 from cs415.models import Webuser, Addresstype, Pagedata, Phonetype, Useraddress, Userinfo, Userphone
-from cs415.serializers import WebUserSerializer, AddressTypeSerializer, PageDataSerializer, PhoneTypeSerializer, UserAddressSerializer, UserInfoSerializer, UserPhoneSerializer
+from cs415.serializers import WebUserSerializer, WebUserSerializerPost, AddressTypeSerializer, PageDataSerializer, PhoneTypeSerializer, UserAddressSerializer, UserInfoSerializer, UserPhoneSerializer
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -15,11 +15,11 @@ class WebUserAPIView(APIView):
         serializer = WebUserSerializer(users, many=True)
         return Response(serializer.data)
     
-    @swagger_auto_schema(operation_description="Add New Web User", request_body=WebUserSerializer)
+    @swagger_auto_schema(operation_description="Add New Web User", request_body=WebUserSerializerPost)
     def post(self, request, *args, **kwargs):
         request.data['created_date'] = str(datetime.now())
         request.data['is_active'] = 1
-        serializer = WebUserSerializer(data=request.data)
+        serializer = WebUserSerializerPost(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
