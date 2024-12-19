@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, re_path
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-from cs415.views import WebUserAPIView, AddressTypeAPIView, UserAddressAPIView, PhoneTypeAPIView, UserPhoneAPIView, UserInfoAPIView, PageDataAPIView
+from cs415.views import Login, WebUserAPIView, AddressTypeAPIView, UserAddressAPIView, PhoneTypeAPIView, UserPhoneAPIView, UserInfoAPIView, PageDataAPIView
 from cs415.views import SingleWebUserAPIView, SingleAddressTypeAPIView, SingleUserAddressAPIView, SinglePhoneTypeAPIView, SingleUserPhoneAPIView, SingleUserInfoAPIView, SinglePageDataAPIView
 
 ## for swagger documentation
@@ -55,4 +55,6 @@ urlpatterns = [
 
     path('pages/', PageDataAPIView.as_view()),
     path('pages/page/<int:page_data_id>', SinglePageDataAPIView.as_view()),
+
+    path('login/', Login.as_view()),
 ]

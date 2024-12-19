@@ -239,4 +239,44 @@ class SinglePageDataAPIView(APIView):
             return Response(serializer.data)
         return Response({'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
+class Login(APIView):
+    def post(self, request):
+        email = request.data.get("email")
+        password = request.data.get("password")
 
+        if not email or not password:
+            return Response({'success': False,
+                             'error': 'Email and Password must have a value'},
+                             status = status.HTTP_400_BAD_REQUEST)
+
+        check_user = Webuser.objects.filter(email=email).exists()
+        if check_user == False:
+            return Response({'success': False,
+                             'error': 'User with this email does not exist'},
+                             status=status.HTTP_404_NOT_FOUND)
+
+        check_pass = Webuser.objects.filter(email = email, password=password).exists()
+        if check_pass == False:
+            return Response({'success': False,
+                             'error': 'Incorrect password for user'},
+                             status=status.HTTP_401_UNAUTHORIZED)
+        user = Webuser.objects.get(email=email, password=password)
+
+        # add last login to User table
+        serializer = WebUserSerializer(user, data={'last_login': str(datetime.now())}, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+
+        if user is not None:
+            jwt_token = "jwt_token_here"
+            data = {
+                'token': jwt_token
+            }
+            return Response({'success': True,
+                             'user_id': user.web_user_id,
+                             'token': jwt_token},
+                             status=status.HTTP_200_OK)
+        else:
+            return Response({'success': False,
+                             'error': 'Invalid Login Credentials'},
+                             status=status.HTTP_400_BAD_REQUEST)
